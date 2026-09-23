@@ -6,6 +6,7 @@ from typing import Optional
 from pathlib import Path
 from config import DEFAULT_MODEL, MAX_TOKENS, TEMPERATURE, PROMPTS_DIR, DEFAULT_FLASHCARD_COUNT
 from src.ai_provider import AIProvider
+from src.json_utils import extract_json
 
 
 class FlashcardGenerator:
@@ -56,6 +57,32 @@ class FlashcardGenerator:
             
         except Exception as e:
             raise Exception(f"Flashcard generation error: {str(e)}")
+
+    def generate_interactive_flashcards(self, transcription: str, num_cards: int = None, language: str = None, difficulty: str = "medium") -> list:
+        """Generate machine-readable flashcards for the interactive UI."""
+        num_cards = num_cards or DEFAULT_FLASHCARD_COUNT
+        language_instruction = language or "the same language as the lecture transcription"
+        prompt = f"""Create {num_cards} {difficulty} study flashcards in {language_instruction}.
+Return only valid JSON, no markdown. The JSON must be an array.
+Each item must have:
+- front: concise question, term, or concept
+- back: clear answer or explanation
+- topic: short topic label
+Use the lecture content only.
+Create a fresh set of cards that helps the student practice from a different angle."""
+
+        try:
+            response = self.provider.chat_completion(
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": transcription}
+                ],
+                max_tokens=self.max_tokens * 2,
+                temperature=self.temperature
+            )
+            return extract_json(response)
+        except Exception as e:
+            raise Exception(f"Interactive flashcard generation error: {str(e)}")
     
     def generate_term_definition_cards(self, transcription: str, num_cards: int = 15) -> str:
         """

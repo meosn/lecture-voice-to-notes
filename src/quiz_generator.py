@@ -6,6 +6,7 @@ from typing import Optional
 from pathlib import Path
 from config import DEFAULT_MODEL, MAX_TOKENS, TEMPERATURE, PROMPTS_DIR, DEFAULT_QUIZ_QUESTIONS
 from src.ai_provider import AIProvider
+from src.json_utils import extract_json
 
 
 class QuizGenerator:
@@ -56,6 +57,34 @@ class QuizGenerator:
             
         except Exception as e:
             raise Exception(f"Quiz generation error: {str(e)}")
+
+    def generate_interactive_quiz(self, transcription: str, num_questions: int = None, language: str = None, difficulty: str = "medium") -> list:
+        """Generate machine-readable quiz questions for the interactive UI."""
+        num_questions = num_questions or DEFAULT_QUIZ_QUESTIONS
+        language_instruction = language or "the same language as the lecture transcription"
+        prompt = f"""Create {num_questions} {difficulty} quiz questions in {language_instruction}.
+Return only valid JSON, no markdown. The JSON must be an array.
+Each item must have:
+- type: "multiple_choice" or "short_answer"
+- question: string
+- options: array of 4 strings for multiple_choice, empty array for short_answer
+- correct_answer: exact correct option text or model short answer
+- explanation: brief explanation
+Use mostly multiple_choice questions and include a few short_answer questions.
+Create a fresh set of questions, not the most obvious first-pass set."""
+
+        try:
+            response = self.provider.chat_completion(
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": transcription}
+                ],
+                max_tokens=self.max_tokens * 2,
+                temperature=self.temperature
+            )
+            return extract_json(response)
+        except Exception as e:
+            raise Exception(f"Interactive quiz generation error: {str(e)}")
     
     def generate_mcq(self, transcription: str, num_questions: int = 10) -> str:
         """

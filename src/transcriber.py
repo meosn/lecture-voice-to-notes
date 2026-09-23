@@ -53,7 +53,22 @@ class Transcriber:
         try:
             return self.provider.transcribe(
                 str(audio_path),
-                language=language or self.language
+                language=language if language is not None else self.language
+            )
+        except Exception as e:
+            raise Exception(f"Transcription error: {str(e)}")
+
+    def transcribe_detailed(self, audio_path: str, language: str = None) -> dict:
+        """Transcribe audio and include detected language metadata when available."""
+        audio_path = Path(audio_path)
+        
+        if not audio_path.exists():
+            raise FileNotFoundError(f"Audio file not found: {audio_path}")
+        
+        try:
+            return self.provider.transcribe_detailed(
+                str(audio_path),
+                language=language if language is not None else self.language
             )
         except Exception as e:
             raise Exception(f"Transcription error: {str(e)}")

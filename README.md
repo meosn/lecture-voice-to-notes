@@ -17,6 +17,57 @@
 
 ---
 
+## Local-First Study Workspace
+
+This fork extends the original lecture-to-notes app into a local-first study workspace. It can run with local transcription and local LLMs, process multiple lecture source types, and generate interactive learning materials from the combined lecture context.
+
+### Added in This Fork
+
+- **Local transcription** with Faster-Whisper.
+- **Local text and vision models** through Ollama.
+- **Multi-source lecture input**: audio, images, pasted text, PDF, DOCX, and PPTX.
+- **Language preservation**: generated notes, quizzes, flashcards, and tasks stay in the lecture language.
+- **Saved lecture library** with folders, open/delete actions, and automatic saving.
+- **Interactive quizzes** with scoring, correct answers, and explanations.
+- **Interactive flashcards** with flip/next/previous study flow.
+- **Mini exams** with local AI grading for text or uploaded photo/file solutions.
+- **Practice tasks workspace** with quick-answer tasks and photo/file solution tasks.
+- **Right-side AI tutor** that can answer questions in lecture context and edit notes/quizzes/flashcards/exams.
+- **Beautiful PDF export** for notes.
+
+### Local Model Defaults
+
+The app is configured to use:
+
+- `llama3.1:8b` for local text generation through Ollama.
+- `qwen2.5vl:7b` for local image understanding through Ollama.
+- `medium` Faster-Whisper model for local audio transcription.
+
+Install the Ollama models:
+
+```bash
+ollama pull llama3.1:8b
+ollama pull qwen2.5vl:7b
+```
+
+Run locally:
+
+```bash
+cd lecture-voice-to-notes
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Then open:
+
+```text
+http://localhost:8501
+```
+
+---
+
 ## 📋 Table of Contents
 
 - [Features](#-features)

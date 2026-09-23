@@ -39,11 +39,13 @@ ENV/
 
 # Temporary files
 temp/
+tmp/
 *.tmp
 *.log
 
 # Output files
 output/
+saved_lectures/
 *.pdf
 *.docx
 

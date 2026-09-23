@@ -37,9 +37,15 @@ class AIProvider:
             from groq import Groq
             self.client = Groq(api_key=self.api_key)
             self.model = self.model or "llama-3.3-70b-versatile"
+
+        elif self.provider_type == "ollama":
+            import ollama
+            from config import OLLAMA_HOST
+            self.client = ollama.Client(host=kwargs.get("host") or OLLAMA_HOST)
+            self.model = self.model or "llama3.1:8b"
             
         else:
-            raise ValueError(f"Unsupported provider type: {self.provider_type}. Supported: openai, groq")
+            raise ValueError(f"Unsupported provider type: {self.provider_type}. Supported: ollama, openai, groq")
     
     def generate_text(self, prompt: str, max_tokens: int = 1000, temperature: float = 0.7) -> str:
         """
@@ -54,6 +60,17 @@ class AIProvider:
             Generated text response
         """
         try:
+            if self.provider_type == "ollama":
+                response = self.client.generate(
+                    model=self.model,
+                    prompt=prompt,
+                    options={
+                        "num_predict": max_tokens,
+                        "temperature": temperature,
+                    },
+                )
+                return response["response"]
+
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
@@ -78,6 +95,17 @@ class AIProvider:
             Generated response
         """
         try:
+            if self.provider_type == "ollama":
+                response = self.client.chat(
+                    model=self.model,
+                    messages=messages,
+                    options={
+                        "num_predict": max_tokens,
+                        "temperature": temperature,
+                    },
+                )
+                return response["message"]["content"]
+
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
@@ -120,9 +148,18 @@ class TranscriptionProvider:
             from groq import Groq
             self.client = Groq(api_key=self.api_key)
             self.model = self.model or "whisper-large-v3"
+
+        elif self.provider_type == "local":
+            from faster_whisper import WhisperModel
+            self.model = self.model or "medium"
+            self.client = WhisperModel(
+                self.model,
+                device=kwargs.get("device") or "auto",
+                compute_type=kwargs.get("compute_type") or "int8",
+            )
             
         else:
-            raise ValueError(f"Unsupported transcription provider: {self.provider_type}. Supported: openai, groq")
+            raise ValueError(f"Unsupported transcription provider: {self.provider_type}. Supported: local, openai, groq")
     
     def transcribe(self, audio_path: str, language: str = None) -> str:
         """
@@ -136,6 +173,14 @@ class TranscriptionProvider:
             Transcribed text
         """
         try:
+            if self.provider_type == "local":
+                segments, _ = self.client.transcribe(
+                    audio_path,
+                    language=language,
+                    vad_filter=True,
+                )
+                return " ".join(segment.text.strip() for segment in segments).strip()
+
             with open(audio_path, "rb") as audio_file:
                 transcription = self.client.audio.transcriptions.create(
                     model=self.model,
@@ -146,6 +191,27 @@ class TranscriptionProvider:
                 
         except Exception as e:
             raise Exception(f"Transcription error ({self.provider_type}): {str(e)}")
+
+    def transcribe_detailed(self, audio_path: str, language: str = None) -> dict:
+        """Transcribe audio and return text plus detected language when available."""
+        try:
+            if self.provider_type == "local":
+                segments, info = self.client.transcribe(
+                    audio_path,
+                    language=language,
+                    vad_filter=True,
+                )
+                text = " ".join(segment.text.strip() for segment in segments).strip()
+                return {
+                    "text": text,
+                    "language": getattr(info, "language", None),
+                    "language_probability": getattr(info, "language_probability", None),
+                }
+
+            text = self.transcribe(audio_path, language=language)
+            return {"text": text, "language": language, "language_probability": None}
+        except Exception as e:
+            raise Exception(f"Detailed transcription error ({self.provider_type}): {str(e)}")
     
     def transcribe_with_timestamps(self, audio_path: str, language: str = None) -> list:
         """
@@ -159,6 +225,21 @@ class TranscriptionProvider:
             List of segments with timestamps and text
         """
         try:
+            if self.provider_type == "local":
+                segments, _ = self.client.transcribe(
+                    audio_path,
+                    language=language,
+                    vad_filter=True,
+                )
+                return [
+                    {
+                        "start": segment.start,
+                        "end": segment.end,
+                        "text": segment.text,
+                    }
+                    for segment in segments
+                ]
+
             with open(audio_path, "rb") as audio_file:
                 transcription = self.client.audio.transcriptions.create(
                     model=self.model,
@@ -196,6 +277,20 @@ PROVIDER_CONFIGS = {
         "requires_api_key": True,
         "llm_models": ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"],
         "whisper_models": ["whisper-large-v3"],
+        "free": True
+    },
+    "ollama": {
+        "name": "Ollama (Local)",
+        "requires_api_key": False,
+        "llm_models": ["llama3.1:8b"],
+        "whisper_models": [],
+        "free": True
+    },
+    "local": {
+        "name": "Faster-Whisper (Local)",
+        "requires_api_key": False,
+        "llm_models": [],
+        "whisper_models": ["medium", "small", "base"],
         "free": True
     }
 }
