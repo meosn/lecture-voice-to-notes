@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Windows Setup Guide - Lecture Voice-to-Notes</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #1f2430;
+      --muted: #616978;
+      --line: #dfe3eb;
+      --accent: #ff4b4b;
+      --accent-dark: #d93535;
+      --code-bg: #111827;
+      --code-text: #f8fafc;
+      --ok: #0f8f57;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    header {
+      background: linear-gradient(135deg, #111827 0%, #2b3344 55%, #ff4b4b 100%);
+      color: white;
+      padding: 56px 24px;
+    }
+
+    .wrap {
+      width: min(1040px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    header p {
+      max-width: 780px;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 18px;
+    }
+
+    main {
+      padding: 32px 0 64px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    nav {
+      position: sticky;
+      top: 20px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    nav h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    nav a {
+      display: block;
+      padding: 9px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      background: #f1f3f7;
+      color: var(--text);
+    }
+
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.04);
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 26px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ul, ol {
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    .note {
+      border-left: 4px solid var(--accent);
+      background: #fff4f4;
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: #5b2525;
+    }
+
+    .success {
+      border-left: 4px solid var(--ok);
+      background: #eefaf4;
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: #164f36;
+    }
+
+    .code-card {
+      margin: 14px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #263244;
+      background: var(--code-bg);
+    }
+
+    .code-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: #1f2937;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .copy {
+      border: 0;
+      border-radius: 7px;
+      background: var(--accent);
+      color: white;
+      padding: 7px 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .copy:hover {
+      background: var(--accent-dark);
+    }
+
+    pre {
+      margin: 0;
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+    }
+
+    pre code {
+      color: var(--code-text);
+      white-space: pre;
+    }
+
+    .inline-code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      background: #eef1f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.95em;
+    }
+
+    a {
+      color: #1358d8;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .check {
+      background: #f7f9fc;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 24px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 820px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        position: static;
+      }
+
+      .checklist {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Windows Setup Guide</h1>
+      <p>Полная инструкция по установке и запуску Lecture Voice-to-Notes Local AI Study Workspace на Windows.</p>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <nav>
+      <h2>Содержание</h2>
+      <a href="#install-git">1. Git</a>
+      <a href="#install-python">2. Python</a>
+      <a href="#install-ollama">3. Ollama и модели</a>
+      <a href="#install-ffmpeg">4. ffmpeg</a>
+      <a href="#clone-project">5. Скачать проект</a>
+      <a href="#venv">6. Виртуальное окружение</a>
+      <a href="#dependencies">7. Зависимости</a>
+      <a href="#run">8. Запуск</a>
+      <a href="#next-time">9. Повторный запуск</a>
+      <a href="#troubleshooting">Проблемы</a>
+    </nav>
+
+    <div>
+      <section>
+        <h2>Что нужно установить</h2>
+        <div class="checklist">
+          <div class="check">Git</div>
+          <div class="check">Python 3.10+</div>
+          <div class="check">Ollama</div>
+          <div class="check">ffmpeg</div>
+        </div>
+        <p class="note">Открывайте команды в Windows PowerShell. После установки Python, Git, Ollama или ffmpeg лучше закрыть PowerShell и открыть заново.</p>
+      </section>
+
+      <section id="install-git">
+        <h2>1. Установить Git</h2>
+        <p>Скачать Git для Windows:</p>
+        <p><a href="https://git-scm.com/download/win" target="_blank">https://git-scm.com/download/win</a></p>
+        <p>После установки открыть PowerShell и проверить:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>git --version</code></pre>
+        </div>
+      </section>
+
+      <section id="install-python">
+        <h2>2. Установить Python</h2>
+        <p>Скачать Python для Windows:</p>
+        <p><a href="https://www.python.org/downloads/windows/" target="_blank">https://www.python.org/downloads/windows/</a></p>
+        <p class="note">Во время установки обязательно поставить галочку <span class="inline-code">Add python.exe to PATH</span>.</p>
+        <p>Проверить:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>python --version</code></pre>
+        </div>
+        <p>Если команда выше не работает, попробовать:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>py --version</code></pre>
+        </div>
+      </section>
+
+      <section id="install-ollama">
+        <h2>3. Установить Ollama и модели</h2>
+        <p>Скачать Ollama:</p>
+        <p><a href="https://ollama.com/download" target="_blank">https://ollama.com/download</a></p>
+        <p>После установки проверить:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>ollama --version</code></pre>
+        </div>
+        <p>Скачать локальные модели:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>ollama pull llama3.1:8b
+ollama pull qwen2.5vl:7b</code></pre>
+        </div>
+        <p>Проверить, что модели скачались:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>ollama list</code></pre>
+        </div>
+        <p class="success">В списке должны быть <span class="inline-code">llama3.1:8b</span> и <span class="inline-code">qwen2.5vl:7b</span>.</p>
+      </section>
+
+      <section id="install-ffmpeg">
+        <h2>4. Установить ffmpeg</h2>
+        <p>Самый простой способ через winget:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>winget install Gyan.FFmpeg</code></pre>
+        </div>
+        <p>Закрыть PowerShell, открыть заново и проверить:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>ffmpeg -version</code></pre>
+        </div>
+        <p>Если <span class="inline-code">winget</span> не работает, скачать вручную:</p>
+        <p><a href="https://ffmpeg.org/download.html" target="_blank">https://ffmpeg.org/download.html</a></p>
+      </section>
+
+      <section id="clone-project">
+        <h2>5. Скачать проект</h2>
+        <p>Перейти на Desktop:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>cd Desktop</code></pre>
+        </div>
+        <p>Скачать репозиторий:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>git clone https://github.com/meosn/lecture-voice-to-notes.git</code></pre>
+        </div>
+        <p>Перейти в папку проекта:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>cd lecture-voice-to-notes</code></pre>
+        </div>
+        <p>Переключиться на нужную ветку:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>git checkout local-ai-study-workspace</code></pre>
+        </div>
+      </section>
+
+      <section id="venv">
+        <h2>6. Создать виртуальное окружение</h2>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>py -m venv .venv</code></pre>
+        </div>
+        <p>Активировать окружение:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>.\.venv\Scripts\Activate.ps1</code></pre>
+        </div>
+        <p>Если PowerShell запрещает запуск скриптов:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code></pre>
+        </div>
+        <p>Потом снова активировать:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>.\.venv\Scripts\Activate.ps1</code></pre>
+        </div>
+        <p class="success">Если всё получилось, слева в командной строке появится <span class="inline-code">(.venv)</span>.</p>
+      </section>
+
+      <section id="dependencies">
+        <h2>7. Установить зависимости</h2>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>python -m pip install --upgrade pip
+pip install -r requirements.txt</code></pre>
+        </div>
+        <p>Установка может занять несколько минут.</p>
+      </section>
+
+      <section id="run">
+        <h2>8. Запустить приложение</h2>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>streamlit run app.py --server.port 8501 --server.address localhost</code></pre>
+        </div>
+        <p>Открыть в браузере:</p>
+        <p><a href="http://localhost:8501" target="_blank">http://localhost:8501</a></p>
+      </section>
+
+      <section id="next-time">
+        <h2>9. Как запускать потом</h2>
+        <p>Каждый раз заново устанавливать всё не нужно. Достаточно:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>cd Desktop\lecture-voice-to-notes
+.\.venv\Scripts\Activate.ps1
+streamlit run app.py --server.port 8501 --server.address localhost</code></pre>
+        </div>
+        <p>Остановить приложение:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Keyboard</span><button class="copy">Copy</button></div>
+          <pre><code>Ctrl + C</code></pre>
+        </div>
+      </section>
+
+      <section id="troubleshooting">
+        <h2>Если что-то пошло не так</h2>
+        <h3>Порт 8501 занят</h3>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>streamlit run app.py --server.port 8502 --server.address localhost</code></pre>
+        </div>
+        <p>Открыть:</p>
+        <p><a href="http://localhost:8502" target="_blank">http://localhost:8502</a></p>
+
+        <h3>Ollama не работает</h3>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>ollama list</code></pre>
+        </div>
+        <p>Если моделей нет, снова выполнить:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>ollama pull llama3.1:8b
+ollama pull qwen2.5vl:7b</code></pre>
+        </div>
+
+        <h3>Аудио не обрабатывается</h3>
+        <p>Проверить ffmpeg:</p>
+        <div class="code-card">
+          <div class="code-top"><span>PowerShell</span><button class="copy">Copy</button></div>
+          <pre><code>ffmpeg -version</code></pre>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    Lecture Voice-to-Notes Local AI Study Workspace
+  </footer>
+
+  <script>
+    document.querySelectorAll(".code-card").forEach((card) => {
+      const button = card.querySelector(".copy");
+      const code = card.querySelector("code");
+      button.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(code.innerText);
+          const old = button.innerText;
+          button.innerText = "Copied";
+          setTimeout(() => {
+            button.innerText = old;
+          }, 1200);
+        } catch (error) {
+          button.innerText = "Select text";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
