@@ -97,6 +97,16 @@
       display: grid;
     }
 
+    body.show-windows #windows-panel,
+    body.show-macos #macos-panel {
+      display: grid;
+    }
+
+    body.show-windows #macos-panel,
+    body.show-macos #windows-panel {
+      display: none;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -276,7 +286,7 @@
     }
   </style>
 </head>
-<body>
+<body class="show-windows">
   <input class="tab-radio" type="radio" name="os-tab" id="tab-windows" checked>
   <input class="tab-radio" type="radio" name="os-tab" id="tab-macos">
 
@@ -308,7 +318,7 @@
 
     <div>
       <section>
-        <h2>Что нужно установить</h2>
+        <h2>Windows: что нужно установить</h2>
         <p class="note">
           Ссылка на проект:
           <a href="https://github.com/meosn/lecture-voice-to-notes/tree/local-ai-study-workspace" target="_blank">https://github.com/meosn/lecture-voice-to-notes/tree/local-ai-study-workspace</a>
@@ -521,7 +531,7 @@ ollama pull qwen2.5vl:7b</code></pre>
 
     <div>
       <section>
-        <h2>Что нужно установить</h2>
+        <h2>macOS: что нужно установить</h2>
         <p class="note">
           Ссылка на проект:
           <a href="https://github.com/meosn/lecture-voice-to-notes/tree/local-ai-study-workspace" target="_blank">https://github.com/meosn/lecture-voice-to-notes/tree/local-ai-study-workspace</a>
@@ -701,6 +711,18 @@ streamlit run app.py --server.port 8501 --server.address localhost</code></pre>
   </footer>
 
   <script>
+    const windowsTab = document.getElementById("tab-windows");
+    const macosTab = document.getElementById("tab-macos");
+
+    function syncOsPanel() {
+      document.body.classList.toggle("show-windows", windowsTab.checked);
+      document.body.classList.toggle("show-macos", macosTab.checked);
+    }
+
+    windowsTab.addEventListener("change", syncOsPanel);
+    macosTab.addEventListener("change", syncOsPanel);
+    syncOsPanel();
+
     document.querySelectorAll(".code-card").forEach((card) => {
       const button = card.querySelector(".copy");
       const code = card.querySelector("code");
