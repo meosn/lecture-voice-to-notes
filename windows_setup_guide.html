@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Windows Setup Guide - Lecture Voice-to-Notes</title>
+  <title>Setup Guide - Lecture Voice-to-Notes</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -55,8 +55,38 @@
       font-size: 18px;
     }
 
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: white;
+      padding: 11px 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .tab-button.active {
+      background: white;
+      color: #1f2430;
+    }
+
     main {
       padding: 32px 0 64px;
+    }
+
+    .os-panel {
+      display: none;
+    }
+
+    .os-panel.active {
+      display: grid;
     }
 
     .grid {
@@ -241,12 +271,16 @@
 <body>
   <header>
     <div class="wrap">
-      <h1>Windows Setup Guide</h1>
-      <p>Полная инструкция по установке и запуску Lecture Voice-to-Notes Local AI Study Workspace на Windows.</p>
+      <h1>Setup Guide</h1>
+      <p>Полная инструкция по установке и запуску Lecture Voice-to-Notes Local AI Study Workspace на Windows и macOS.</p>
+      <div class="tabs" aria-label="Operating system tabs">
+        <button class="tab-button active" type="button" data-target="windows-panel">Windows</button>
+        <button class="tab-button" type="button" data-target="macos-panel">macOS</button>
+      </div>
     </div>
   </header>
 
-  <main class="wrap grid">
+  <main id="windows-panel" class="wrap grid os-panel active">
     <nav>
       <h2>Содержание</h2>
       <a href="#install-git">1. Git</a>
@@ -460,11 +494,217 @@ ollama pull qwen2.5vl:7b</code></pre>
     </div>
   </main>
 
+  <main id="macos-panel" class="wrap grid os-panel">
+    <nav>
+      <h2>Содержание</h2>
+      <a href="#mac-install-tools">1. Инструменты</a>
+      <a href="#mac-install-ollama">2. Ollama и модели</a>
+      <a href="#mac-install-ffmpeg">3. ffmpeg</a>
+      <a href="#mac-clone-project">4. Скачать проект</a>
+      <a href="#mac-venv">5. Виртуальное окружение</a>
+      <a href="#mac-dependencies">6. Зависимости</a>
+      <a href="#mac-run">7. Запуск</a>
+      <a href="#mac-next-time">8. Повторный запуск</a>
+      <a href="#mac-troubleshooting">Проблемы</a>
+    </nav>
+
+    <div>
+      <section>
+        <h2>Что нужно установить</h2>
+        <p class="note">
+          Ссылка на проект:
+          <a href="https://github.com/meosn/lecture-voice-to-notes/tree/local-ai-study-workspace" target="_blank">https://github.com/meosn/lecture-voice-to-notes/tree/local-ai-study-workspace</a>
+        </p>
+        <div class="checklist">
+          <div class="check">Command Line Tools</div>
+          <div class="check">Python 3.10+</div>
+          <div class="check">Ollama</div>
+          <div class="check">ffmpeg</div>
+        </div>
+        <p class="note">Открывайте команды в приложении Terminal. Его можно найти через Spotlight: нажать Cmd + Space и написать Terminal.</p>
+      </section>
+
+      <section id="mac-install-tools">
+        <h2>1. Установить инструменты</h2>
+        <p>Сначала установить Apple Command Line Tools. Они нужны для Git и сборки некоторых Python-зависимостей:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>xcode-select --install</code></pre>
+        </div>
+        <p>Проверить Git:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>git --version</code></pre>
+        </div>
+        <p>Проверить Python:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>python3 --version</code></pre>
+        </div>
+        <p>Если Python старый или не найден, установить свежий Python с официального сайта:</p>
+        <p><a href="https://www.python.org/downloads/macos/" target="_blank">https://www.python.org/downloads/macos/</a></p>
+      </section>
+
+      <section id="mac-install-ollama">
+        <h2>2. Установить Ollama и модели</h2>
+        <p>Скачать Ollama для macOS:</p>
+        <p><a href="https://ollama.com/download" target="_blank">https://ollama.com/download</a></p>
+        <p>После установки открыть Ollama один раз из Applications, затем проверить в Terminal:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>ollama --version</code></pre>
+        </div>
+        <p>Скачать локальные модели:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>ollama pull llama3.1:8b
+ollama pull qwen2.5vl:7b</code></pre>
+        </div>
+        <p>Проверить, что модели скачались:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>ollama list</code></pre>
+        </div>
+        <p class="success">В списке должны быть <span class="inline-code">llama3.1:8b</span> и <span class="inline-code">qwen2.5vl:7b</span>.</p>
+      </section>
+
+      <section id="mac-install-ffmpeg">
+        <h2>3. Установить ffmpeg</h2>
+        <p>Если Homebrew уже установлен, выполнить:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>brew install ffmpeg</code></pre>
+        </div>
+        <p>Если Homebrew не установлен, сначала поставить его:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+        </div>
+        <p>После установки Homebrew закрыть Terminal, открыть заново и выполнить:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>brew install ffmpeg
+ffmpeg -version</code></pre>
+        </div>
+      </section>
+
+      <section id="mac-clone-project">
+        <h2>4. Скачать проект</h2>
+        <p>Перейти на Desktop:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>cd ~/Desktop</code></pre>
+        </div>
+        <p>Скачать репозиторий:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>git clone https://github.com/meosn/lecture-voice-to-notes.git</code></pre>
+        </div>
+        <p>Перейти в папку проекта и выбрать нужную ветку:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>cd lecture-voice-to-notes
+git checkout local-ai-study-workspace</code></pre>
+        </div>
+      </section>
+
+      <section id="mac-venv">
+        <h2>5. Создать виртуальное окружение</h2>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>python3 -m venv .venv</code></pre>
+        </div>
+        <p>Активировать окружение:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>source .venv/bin/activate</code></pre>
+        </div>
+        <p class="success">Если всё получилось, слева в командной строке появится <span class="inline-code">(.venv)</span>.</p>
+      </section>
+
+      <section id="mac-dependencies">
+        <h2>6. Установить зависимости</h2>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>python -m pip install --upgrade pip
+pip install -r requirements.txt</code></pre>
+        </div>
+        <p>Установка может занять несколько минут.</p>
+      </section>
+
+      <section id="mac-run">
+        <h2>7. Запустить приложение</h2>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>streamlit run app.py --server.port 8501 --server.address localhost</code></pre>
+        </div>
+        <p>Открыть в браузере:</p>
+        <p><a href="http://localhost:8501" target="_blank">http://localhost:8501</a></p>
+      </section>
+
+      <section id="mac-next-time">
+        <h2>8. Как запускать потом</h2>
+        <p>Каждый раз заново устанавливать всё не нужно. Достаточно:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>cd ~/Desktop/lecture-voice-to-notes
+source .venv/bin/activate
+streamlit run app.py --server.port 8501 --server.address localhost</code></pre>
+        </div>
+        <p>Остановить приложение:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Keyboard</span><button class="copy">Copy</button></div>
+          <pre><code>Ctrl + C</code></pre>
+        </div>
+      </section>
+
+      <section id="mac-troubleshooting">
+        <h2>Если что-то пошло не так</h2>
+        <h3>Порт 8501 занят</h3>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>streamlit run app.py --server.port 8502 --server.address localhost</code></pre>
+        </div>
+        <p>Открыть:</p>
+        <p><a href="http://localhost:8502" target="_blank">http://localhost:8502</a></p>
+
+        <h3>Ollama не отвечает</h3>
+        <p>Открыть приложение Ollama из Applications, затем проверить модели:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>ollama list</code></pre>
+        </div>
+
+        <h3>Аудио не обрабатывается</h3>
+        <p>Проверить ffmpeg:</p>
+        <div class="code-card">
+          <div class="code-top"><span>Terminal</span><button class="copy">Copy</button></div>
+          <pre><code>ffmpeg -version</code></pre>
+        </div>
+      </section>
+    </div>
+  </main>
+
   <footer>
     Lecture Voice-to-Notes Local AI Study Workspace
   </footer>
 
   <script>
+    document.querySelectorAll(".tab-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".tab-button").forEach((item) => {
+          item.classList.remove("active");
+        });
+        document.querySelectorAll(".os-panel").forEach((panel) => {
+          panel.classList.remove("active");
+        });
+
+        button.classList.add("active");
+        document.getElementById(button.dataset.target).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+
     document.querySelectorAll(".code-card").forEach((card) => {
       const button = card.querySelector(".copy");
       const code = card.querySelector("code");
