@@ -72,7 +72,14 @@
       cursor: pointer;
     }
 
-    .tab-button.active {
+    .tab-radio {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #tab-windows:checked ~ header label[for="tab-windows"],
+    #tab-macos:checked ~ header label[for="tab-macos"] {
       background: white;
       color: #1f2430;
     }
@@ -85,7 +92,8 @@
       display: none;
     }
 
-    .os-panel.active {
+    #tab-windows:checked ~ #windows-panel,
+    #tab-macos:checked ~ #macos-panel {
       display: grid;
     }
 
@@ -269,18 +277,21 @@
   </style>
 </head>
 <body>
+  <input class="tab-radio" type="radio" name="os-tab" id="tab-windows" checked>
+  <input class="tab-radio" type="radio" name="os-tab" id="tab-macos">
+
   <header>
     <div class="wrap">
       <h1>Setup Guide</h1>
       <p>Полная инструкция по установке и запуску Lecture Voice-to-Notes Local AI Study Workspace на Windows и macOS.</p>
       <div class="tabs" aria-label="Operating system tabs">
-        <button class="tab-button active" type="button" data-target="windows-panel">Windows</button>
-        <button class="tab-button" type="button" data-target="macos-panel">macOS</button>
+        <label class="tab-button" for="tab-windows">Windows</label>
+        <label class="tab-button" for="tab-macos">macOS</label>
       </div>
     </div>
   </header>
 
-  <main id="windows-panel" class="wrap grid os-panel active">
+  <main id="windows-panel" class="wrap grid os-panel">
     <nav>
       <h2>Содержание</h2>
       <a href="#install-git">1. Git</a>
@@ -690,21 +701,6 @@ streamlit run app.py --server.port 8501 --server.address localhost</code></pre>
   </footer>
 
   <script>
-    document.querySelectorAll(".tab-button").forEach((button) => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".tab-button").forEach((item) => {
-          item.classList.remove("active");
-        });
-        document.querySelectorAll(".os-panel").forEach((panel) => {
-          panel.classList.remove("active");
-        });
-
-        button.classList.add("active");
-        document.getElementById(button.dataset.target).classList.add("active");
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    });
-
     document.querySelectorAll(".code-card").forEach((card) => {
       const button = card.querySelector(".copy");
       const code = card.querySelector("code");
